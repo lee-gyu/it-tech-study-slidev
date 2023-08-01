@@ -12,10 +12,10 @@ info: |
 drawings:
   persist: false
 transition: slide-left
-title: Welcome to Slidev
+title: 이노룰스 IT 기술 스터디
 ---
 
-# 이노룰스 IT 기술 스터디
+# 이노룰스 IT 기술 스터디 1기
 
 Web, Java, AI 등 폭 넓은 IT 주제 스터디 모임
 
@@ -37,14 +37,6 @@ The last comment block of each slide will be treated as slide notes. It will be 
 -->
 
 ---
-layout: default
----
-
-# 목차
-
-<Toc></Toc>
-
----
 transition: slide-up
 ---
 
@@ -52,12 +44,22 @@ transition: slide-up
 
 각자 선정한 스터디 학습 주제
 
-- 📝 **이규철** - 이노룰스 Configuration XML (a.k.a innorules.xml)
+- 📝 **이규철** - 룰 시스템 Configuration
 - 🎨 **김도현** - React 상태 관리 (Context API, Recoil)
 - 🧑‍💻 **김소윤** - CSS flex-box 레이아웃
 
 ---
-src: ./pages/230802/leegyu/innorules.md
+src: ./pages/2308/lee-gyu/innorules.md
+hide: false
+---
+
+---
+src: ./pages/2308/kdh379/react-state-management.md
+hide: false
+---
+
+---
+src: ./pages/2308/ksy03/css-flex-box.md
 hide: false
 ---
 

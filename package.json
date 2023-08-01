@@ -1,6 +1,9 @@
 {
   "name": "slidev",
   "private": true,
+  "engines": {
+    "node": "^18.0.0"
+  },
   "scripts": {
     "build": "slidev build",
     "dev": "slidev --open",
