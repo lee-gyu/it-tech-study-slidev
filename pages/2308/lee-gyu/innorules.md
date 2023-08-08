@@ -5,7 +5,7 @@ background: none
 
 # innorules.xml
 
-룰 시스템 Configuration\
+이노룰스 7.3 룰 시스템 Configuration (빌더 + 룰 엔진)\
 이규철
 
 ---
@@ -90,6 +90,42 @@ layout: default
 layout: default
 ---
 
+# J2EE
+
+룰 시스템은 J2EE 기반 아키텍처에서 동작한다.\
+J2EE는 Java 2 Platform, Enterprise Edition의 약자로, 자바 기반의 엔터프라이즈 애플리케이션 개발을 위한 플랫폼이다.\
+이것은 확장성, 보안성, 신뢰성, 분산형 컴포넌트 기반의 멀티 티어 애플리케이션을 개발하기 위한 플랫폼이다.\
+J2EE는 아래의 구성 요소들로 이루어진다.
+
+- Servlet: HTTP 요청을 처리하는 서버 사이드 컴포넌트
+- JSP: 동적 웹 페이지를 생성하기 위한 기술. JSP 페이지는 서블릿으로 변환되어 실행.
+- EJB: 확장가능한 분산형 기업용 애플리케이션을 위한 컴포넌트 기반 아키텍처
+  - Session Bean: 클라이언트와 상호작용하는 비지니스 로직을 포함
+  - Entity Bean: 데이터베이스와 상호작용하는 비지니스 로직을 포함
+  - Message Driven Bean: 비동기 메시지를 처리하는 비지니스 로직을 포함
+- JMS: 비동기 메시지를 생성, 소비, 전달하는 기술
+- JTA: 트랜잭션 처리를 위한 API
+- JNDI: 이름과 디렉터리를 이용하여 내부 자원을 찾는 기술
+- JPA: 자바 개체와 관계형 데이터베이스를 매핑하는 기술
+
+---
+layout: default
+---
+
+# J2EE Application 배포
+
+J2EE 애플리케이션은 일반적으로 J2EE 명세를 구현한 WAS(Web Application Server)에 배포된다.\
+해당 명세를 구현한 WAS는 아래와 같은 종류가 있다.
+
+- Oracle WebLogic
+- IBM WebSphere
+- Apache Tomcat
+- TMAX JEUS
+
+---
+layout: default
+---
+
 # J2EE 룰 시스템 초기화
 
 1. 웹 애플이케이션 배포 (`.war` 파일 또는 디렉터리 )
@@ -97,7 +133,9 @@ layout: default
 3. `<servlet/>` 요소 정의된 서블릿 초기화 (`<load-on-startup/>` 요소의 우선 순위 순)
 4. 기본적으로 아래와 같은 XML을 구성함
 
-```xml
+- 아래 `web.xml` 예제는 WAS 홈 디렉터리의 /{context-path}/WEB-INF/conf/innorules.xml 파일을 읽어들임
+
+```xml {*} {maxHeight:'260px'}
 <servlet>
   <servlet-name>InnoRulesConfigurator</servlet-name>
   <!-- 서블릿 초기화 클래스 -->
@@ -126,17 +164,81 @@ layout: default
 layout: default
 ---
 
-# innorules.xml 로드
+# config xml 로드
 
 - 룰 `InitializerChainServlet`에 파라미터로 정의된 `config-name` 요소 이름의 xml 파일을 읽음
 - 해당 파일의 디렉터리 경로는 `config-path` 요소로 정의됨
 - 빌더, 룰 엔진 등의 서비스 초기화를 위한 핵심 설정 정의
+- 가장 root 요소는 `<innorules-server>` 요소로 정의됨.
 
 ---
 layout: default
 ---
 
-# DataSource (JDBC)
+# 이노룰스 자바 프로젝트
+
+- `builder`:
+- `builder-api`:
+- `builder-client-intf`:
+- `built-in-customizers`:
+- `configuration-wizard`:
+- `innorules-api`:
+- `innorules-core`:
+- `innorules-extra`:
+- `innorulesj`:
+- `innoutils-python-extension`:
+- `innoutils`:
+- `log4j-intf`:
+- `log4j2-intf`:
+- `rest-service`:
+- `udf-collection`:
+
+---
+layout: default
+---
+
+# config xml 구성 계층 요소
+
+초기화 과정은 `com.innoexpert.utility.initializer.InitializerChainServlet` 서블릿 클래스에서 호출되며,\
+실제 초기화 로직은 `com.innoexpert.utility.initializer.InitializerChainForWebapp` 클래스의 `initialize(configPath, configName, env, appctx)` 메소드에서 수행된다.
+※ `innoutils` 프로젝트에서 확인 가능
+
+- `<innorules-server/>`: 룰 서버의 root 요소
+  - `<license/>`: 룰 서버의 라이센스 정보 (Seed256 암호화)
+  - `<management/>`: 
+  - `<logging/>`: 
+  - `<jndi/>`:
+  - `<ruledb-validator/>`:
+  - `<dbinfo-managers/>`:
+  - `<builder-service/>`:
+  - `<repositories/>`:
+  - `<irclient-clusters/>`:
+  - `<initializers/>`:
+
+---
+layout: default
+---
+
+# InitializerChainForWebapp.initialize()
+
+서블릿에서 지정한 xml 경로의 내용을 파싱하여 JVM에 이노룰스 룰 서비스 클래스들을 초기화한다.\
+configName이 null인 경우, `innorules`를 파일 이름으로 사용한다.\
+만약 configName이 `classpath:`로 시작한다면 내부 클래스 로더 내 리소스 영역에서 xml 파일을 찾는다.
+
+xml 파일은 `org.apache.axiom.om.OMXMLBuilderFactory`으로 파싱한다.\
+초기화 과정은 아래 순서를 따른다.
+
+1. 라이선스 확인
+2. initializers 로드 (아래는 기본 빌더 서버로 설정되는 initializer 목록)
+
+- `com.innoexpert.utility.initializer.impl.ManagementInitializer`
+- `com.innorules.common.log.LoggingInitializer`
+- `com.innoexpert.utility.initializer.impl.JndiInitializer`
+- `com.innorules.configurator.initializer.RuleDbValidator`
+- `com.innoexpert.innorulesj.repository.initializer.DBInfoInitializer`
+- `com.innoexpert.innorulesj.builder.impl.initializer.BuilderServiceInitializer`
+- `com.innoexpert.innorulesj.repository.initializer.RepositoryInitializer`
+- `com.innoexpert.rulesclient.initializer.RuleInterfaceClusterInitializer`
 
 ---
 layout: default
@@ -145,3 +247,4 @@ layout: default
 
 - 룰 시스템 컨셉 6.8
 - 룰 시스템 아키텍트
+- 이노룰스 7.3 기준 소스 분석
