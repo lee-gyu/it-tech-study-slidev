@@ -29,10 +29,6 @@ transition: fade-out
 - **예제** - 실제 웹 사이트 Flex box 활용 사례
 - **팁** - Flex box 효과적으로 활용하고, 흔히 발생하는 문제와 해결방법
 
-<br>
-<br>
-
-출처: [MDN - Flex box](https://developer.mozilla.org/ko/docs/Learn/CSS/CSS_layout/Flexbox)
 
 <style>
 h1 {
@@ -72,4 +68,12 @@ src: "./05_inline-flex.md"
 
 ---
 src: "./06_예제.md"
+---
+
+---
+src: "./07_tip.md"
+---
+
+---
+src: "./08_참고자료.md"
 ---
