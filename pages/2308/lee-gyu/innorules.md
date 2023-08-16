@@ -216,7 +216,7 @@ xml 파일은 `org.apache.axiom.om.OMXMLBuilderFactory`으로 파싱한다.\
 layout: default
 ---
 
-# `<management/>` innoutils/ManagementInitializer
+# innoutils/ManagementInitializer
 
 J2EE의 MBean을 생성하여 WAS의 MBean 서버에 등록\
 자바 기능을 모니터링하고 관리하기 위한 기능을 제공
@@ -227,7 +227,7 @@ J2EE의 MBean을 생성하여 WAS의 MBean 서버에 등록\
 layout: default
 ---
 
-# `<logging/>` innoutils/LoggingInitializer
+# innoutils/LoggingInitializer
 
 어떤 Logger를 사용할지 설정하는 요소\
 log4j2를 이용한다면 `com.innorules.log.impl.log4j2.Log4jLogManager`를 class로 지정한다.\
@@ -237,7 +237,7 @@ log4j2를 이용한다면 `com.innorules.log.impl.log4j2.Log4jLogManager`를 cla
 layout: default
 ---
 
-# `<jndi/>` innoutils/JndiInitializer
+# innoutils/JndiInitializer
 
 요소에 정의된 각 `<resource/>`를 jndi Context에 저장한다.\
 `provider-urls`를 ","로 분할하여 각 요소에 저장한다.\
@@ -245,11 +245,14 @@ layout: default
 
 기본적으로 `java.naming.factory.initial`과 `java.naming.provider.url`이 설정되며, 나머지는 `<resource/>`에 정의된 내용을 저장한다.
 
+- 주로 빌더와 룰 엔진에서 쓰는 데이터소스를 정의
+- 데이터소스를 통해 룰 DB에 접근
+
 ---
 layout: default
 ---
 
-# `<ruledb-validator/>` configuration-wizard/RuleDbValidator
+# configuration-wizard/RuleDbValidator
 
 현재 룰 DB 구성이 룰 시스템 DB에 올바른지 확인한다.\
 `RULES010`테이블의 `R01_1`이 `SYSTEM`으로 지정된 `R01_2` 컬럼을 확인한다.\
@@ -259,9 +262,58 @@ layout: default
 layout: default
 ---
 
-# `<dbinfo-managers>` innorulesj/DBInfoInitializer
+# innorulesj/DBInfoInitializer
 
+DB정보 초기화로 각 업무 DB가 어느 데이터 소스를 사용할 것인지 지정
 
+```xml
+<dbinfo-managers>
+  <dbinfo-manager key="builder">
+    <dbinfos system="dev">
+      <dbinfo
+        id="1"
+        name="DEVBIZ"
+        description="DEV"
+        java.naming.factory.initial="com.innoexpert.utility.jndi.IrInitialContextFactory"
+        java.naming.provider.url="DEV"
+        dsname="EXT@1"></dbinfo>
+    </dbinfos>
+  </dbinfo-manager>
+</dbinfo-managers>
+```
+
+---
+layout: default
+---
+
+# builder/BuilderServiceInitializer
+
+빌더 서비스 초기화를 위해 정의\
+이 initializer가 정의 되지 않으면 빌더 기능을 동작하지 않는다.
+
+내부적으로 아래 요소들이 추가로 정의된다.
+
+- 빌더 서비스와 연동할 룰 DB (읽기 전용, JNDI 이름 등)
+- 모니터링 서버 정보 (포트와, timeout 관련 정보)
+- 빌더 플러그인 (암호화, 비밀번호 체커)
+
+---
+layout: default
+---
+
+# innorulesj/RepositoryInitializer
+
+룰 엔진이 사용하는 룰 DB 정보 지정\
+모니터링 서버에 접속하기 위한 정보도 지정하여, 빌더에서 수정이 일어나면 동기화한다.
+
+---
+layout: default
+---
+
+# innorulesj/RuleInterfaceClusterInitializer
+
+룰을 호출하기 위한 룰 인터페이스 클러스터를 정의\
+동시에 여러 룰을 호출할 수 있도록, pool을 지정한다.
 
 ---
 layout: default
@@ -269,5 +321,7 @@ layout: default
 # 참고 자료
 
 - 룰 시스템 컨셉 6.8
+  - `rdoc/50. 기술문서/00. 가이드/10. 아키텍처 구성, 설치/01. InnoRules/v6.x`
 - 룰 시스템 아키텍트
-- 이노룰스 7.3 기준 소스 분석
+  - `rdoc/70. 교육, 회의 등/10. 교육/00. 내부 교육/룰 시스템 아키텍트(초급)`
+- 이노룰스 7.3 nightly 기준 소스 분석
